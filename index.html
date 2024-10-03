@@ -37,6 +37,7 @@
     <input type="password" id="keyInput" placeholder="Enter encryption key"><br>
 
     <select id="encryptionMethod">
+        <!-- CryptoJS Methods -->
         <option value="AES">AES</option>
         <option value="DES">DES</option>
         <option value="TripleDES">TripleDES</option>
@@ -55,6 +56,25 @@
         <option value="HmacSHA512">Hmac-SHA512</option>
         <option value="HmacSHA3">Hmac-SHA3</option>
         <option value="HmacRIPEMD160">Hmac-RIPEMD160</option>
+
+        <!-- Custom Simple Methods -->
+        <option value="CaesarCipher">Caesar Cipher</option>
+        <option value="AtbashCipher">Atbash Cipher</option>
+        <option value="VigenereCipher">Vigenere Cipher</option>
+        <option value="Base64">Base64 Encoding</option>
+        <option value="ROT13">ROT13</option>
+        <option value="Reverse">Reverse String</option>
+        <option value="XOR">XOR Cipher</option>
+        <option value="RailFence">Rail Fence Cipher</option>
+        <option value="Substitution">Simple Substitution Cipher</option>
+        <option value="AffineCipher">Affine Cipher</option>
+        <option value="ShiftLeft">Shift Left Cipher</option>
+        <option value="ShiftRight">Shift Right Cipher</option>
+        <option value="MonoAlphabetic">Mono-Alphabetic Cipher</option>
+        <option value="DoubleTransposition">Double Transposition Cipher</option>
+        <option value="PlayfairCipher">Playfair Cipher (Basic)</option>
+        <option value="OneTimePad">One Time Pad (Pseudo)</option>
+        <option value="KeywordSubstitution">Keyword Substitution Cipher</option>
     </select><br>
 
     <button onclick="encryptText()">Encrypt</button>
@@ -69,7 +89,7 @@
             let key = document.getElementById("keyInput").value;
             let method = document.getElementById("encryptionMethod").value;
 
-            if (text && key) {
+            if (text && (key || ["MD5", "SHA1", "SHA256", "SHA512", "SHA3", "RIPEMD160", "Base64", "ROT13", "Reverse"].includes(method))) {
                 let encrypted = "";
                 switch (method) {
                     case "AES":
@@ -126,6 +146,27 @@
                     case "HmacRIPEMD160":
                         encrypted = CryptoJS.HmacRIPEMD160(text, key).toString();
                         break;
+                    case "CaesarCipher":
+                        encrypted = caesarCipher(text, 3);
+                        break;
+                    case "AtbashCipher":
+                        encrypted = atbashCipher(text);
+                        break;
+                    case "VigenereCipher":
+                        encrypted = vigenereCipher(text, key);
+                        break;
+                    case "Base64":
+                        encrypted = btoa(text);
+                        break;
+                    case "ROT13":
+                        encrypted = rot13(text);
+                        break;
+                    case "Reverse":
+                        encrypted = text.split("").reverse().join("");
+                        break;
+                    case "XOR":
+                        encrypted = xorCipher(text, key);
+                        break;
                     default:
                         alert("Invalid encryption method.");
                         return;
@@ -141,7 +182,7 @@
             let key = document.getElementById("keyInput").value;
             let method = document.getElementById("encryptionMethod").value;
 
-            if (encryptedText && key) {
+            if (encryptedText && (key || ["Base64", "ROT13", "Reverse"].includes(method))) {
                 let decrypted = "";
                 try {
                     switch (method) {
@@ -154,26 +195,81 @@
                         case "TripleDES":
                             decrypted = CryptoJS.TripleDES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
                             break;
-                        case "Rabbit":
-                            decrypted = CryptoJS.Rabbit.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                        case "Base64":
+                            decrypted = atob(encryptedText);
                             break;
-                        case "RC4":
-                            decrypted = CryptoJS.RC4.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                        case "ROT13":
+                            decrypted = rot13(encryptedText);
                             break;
-                        case "RC4Drop":
-                            decrypted = CryptoJS.RC4Drop.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                        case "Reverse":
+                            decrypted = encryptedText.split("").reverse().join("");
                             break;
                         default:
-                            alert("The selected method is a hash or Hmac, which cannot be decrypted.");
+                            alert("The selected method is a hash or unsupported decryption method.");
                             return;
                     }
                     document.getElementById("resultOutput").value = decrypted;
                 } catch (e) {
-                    alert("Decryption failed. Please check the key or encrypted text.");
+                    alert("Decryption failed. Please check your inputs.");
                 }
             } else {
-                alert("Please enter both encrypted text and key.");
+                alert("Please enter both encrypted text and encryption key.");
             }
+        }
+
+        // Simple Implementations of Custom Encryption Algorithms
+
+        function caesarCipher(str, shift) {
+            return str.split('').map(char => {
+                if (char.match(/[a-z]/i)) {
+                    let code = char.charCodeAt(0);
+                    let base = (code >= 65 && code <= 90) ? 65 : 97;
+                    return String.fromCharCode(((code - base + shift) % 26) + base);
+                }
+                return char;
+            }).join('');
+        }
+
+        function atbashCipher(str) {
+            return str.split('').map(char => {
+                if (char.match(/[a-z]/i)) {
+                    let base = (char >= 'a' && char <= 'z') ? 'a' : 'A';
+                    return String.fromCharCode(25 - (char.charCodeAt(0) - base.charCodeAt(0)) + base.charCodeAt(0));
+                }
+                return char;
+            }).join('');
+        }
+
+        function vigenereCipher(text, key) {
+            let output = "";
+            key = key.toUpperCase();
+            for (let i = 0, j = 0; i < text.length; i++) {
+                let char = text[i];
+                if (char.match(/[a-z]/i)) {
+                    let base = char >= 'a' ? 97 : 65;
+                    let shift = (char.charCodeAt(0) - base + key[j % key.length].charCodeAt(0) - 65) % 26;
+                    output += String.fromCharCode(base + shift);
+                    j++;
+                } else {
+                    output += char;
+                }
+            }
+            return output;
+        }
+
+        function xorCipher(str, key) {
+            return str.split("").map((char, i) => String.fromCharCode(char.charCodeAt(0) ^ key.charCodeAt(i % key.length))).join("");
+        }
+
+        function rot13(str) {
+            return str.split("").map(char => {
+                if (char.match(/[a-z]/i)) {
+                    let code = char.charCodeAt(0);
+                    let base = (code >= 65 && code <= 90) ? 65 : 97;
+                    return String.fromCharCode(((code - base + 13) % 26) + base);
+                }
+                return char;
+            }).join("");
         }
     </script>
 </body>
