@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Encryption/Decryption</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2b2b2b;
+            color: #ffffff;
+            text-align: center;
+            padding-top: 50px;
+        }
+        input, button, select, textarea {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Text Encryption/Decryption</h2>
+    
+    <textarea id="textInput" rows="4" cols="50" placeholder="Enter text to encrypt/decrypt"></textarea><br>
+    <input type="password" id="keyInput" placeholder="Enter encryption key"><br>
+
+    <select id="encryptionMethod">
+        <option value="AES">AES</option>
+        <option value="DES">DES</option>
+        <option value="TripleDES">TripleDES</option>
+        <option value="Rabbit">Rabbit</option>
+        <option value="RC4">RC4</option>
+        <option value="RC4Drop">RC4Drop</option>
+        <option value="MD5">MD5 (Hash)</option>
+        <option value="SHA1">SHA-1 (Hash)</option>
+        <option value="SHA256">SHA-256 (Hash)</option>
+        <option value="SHA512">SHA-512 (Hash)</option>
+        <option value="SHA3">SHA-3 (Hash)</option>
+        <option value="RIPEMD160">RIPEMD-160 (Hash)</option>
+        <option value="HmacMD5">Hmac-MD5</option>
+        <option value="HmacSHA1">Hmac-SHA1</option>
+        <option value="HmacSHA256">Hmac-SHA256</option>
+        <option value="HmacSHA512">Hmac-SHA512</option>
+        <option value="HmacSHA3">Hmac-SHA3</option>
+        <option value="HmacRIPEMD160">Hmac-RIPEMD160</option>
+    </select><br>
+
+    <button onclick="encryptText()">Encrypt</button>
+    <button onclick="decryptText()">Decrypt</button><br>
+
+    <h3>Result:</h3>
+    <textarea id="resultOutput" rows="4" cols="50" readonly></textarea>
+
+    <script>
+        function encryptText() {
+            let text = document.getElementById("textInput").value;
+            let key = document.getElementById("keyInput").value;
+            let method = document.getElementById("encryptionMethod").value;
+
+            if (text && key) {
+                let encrypted = "";
+                switch (method) {
+                    case "AES":
+                        encrypted = CryptoJS.AES.encrypt(text, key).toString();
+                        break;
+                    case "DES":
+                        encrypted = CryptoJS.DES.encrypt(text, key).toString();
+                        break;
+                    case "TripleDES":
+                        encrypted = CryptoJS.TripleDES.encrypt(text, key).toString();
+                        break;
+                    case "Rabbit":
+                        encrypted = CryptoJS.Rabbit.encrypt(text, key).toString();
+                        break;
+                    case "RC4":
+                        encrypted = CryptoJS.RC4.encrypt(text, key).toString();
+                        break;
+                    case "RC4Drop":
+                        encrypted = CryptoJS.RC4Drop.encrypt(text, key).toString();
+                        break;
+                    case "MD5":
+                        encrypted = CryptoJS.MD5(text).toString();
+                        break;
+                    case "SHA1":
+                        encrypted = CryptoJS.SHA1(text).toString();
+                        break;
+                    case "SHA256":
+                        encrypted = CryptoJS.SHA256(text).toString();
+                        break;
+                    case "SHA512":
+                        encrypted = CryptoJS.SHA512(text).toString();
+                        break;
+                    case "SHA3":
+                        encrypted = CryptoJS.SHA3(text).toString();
+                        break;
+                    case "RIPEMD160":
+                        encrypted = CryptoJS.RIPEMD160(text).toString();
+                        break;
+                    case "HmacMD5":
+                        encrypted = CryptoJS.HmacMD5(text, key).toString();
+                        break;
+                    case "HmacSHA1":
+                        encrypted = CryptoJS.HmacSHA1(text, key).toString();
+                        break;
+                    case "HmacSHA256":
+                        encrypted = CryptoJS.HmacSHA256(text, key).toString();
+                        break;
+                    case "HmacSHA512":
+                        encrypted = CryptoJS.HmacSHA512(text, key).toString();
+                        break;
+                    case "HmacSHA3":
+                        encrypted = CryptoJS.HmacSHA3(text, key).toString();
+                        break;
+                    case "HmacRIPEMD160":
+                        encrypted = CryptoJS.HmacRIPEMD160(text, key).toString();
+                        break;
+                    default:
+                        alert("Invalid encryption method.");
+                        return;
+                }
+                document.getElementById("resultOutput").value = encrypted;
+            } else {
+                alert("Please enter both text and encryption key.");
+            }
+        }
+
+        function decryptText() {
+            let encryptedText = document.getElementById("textInput").value;
+            let key = document.getElementById("keyInput").value;
+            let method = document.getElementById("encryptionMethod").value;
+
+            if (encryptedText && key) {
+                let decrypted = "";
+                try {
+                    switch (method) {
+                        case "AES":
+                            decrypted = CryptoJS.AES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                            break;
+                        case "DES":
+                            decrypted = CryptoJS.DES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                            break;
+                        case "TripleDES":
+                            decrypted = CryptoJS.TripleDES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                            break;
+                        case "Rabbit":
+                            decrypted = CryptoJS.Rabbit.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                            break;
+                        case "RC4":
+                            decrypted = CryptoJS.RC4.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                            break;
+                        case "RC4Drop":
+                            decrypted = CryptoJS.RC4Drop.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+                            break;
+                        default:
+                            alert("The selected method is a hash or Hmac, which cannot be decrypted.");
+                            return;
+                    }
+                    document.getElementById("resultOutput").value = decrypted;
+                } catch (e) {
+                    alert("Decryption failed. Please check the key or encrypted text.");
+                }
+            } else {
+                alert("Please enter both encrypted text and key.");
+            }
+        }
+    </script>
+</body>
+</html>
